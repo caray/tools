@@ -90,3 +90,10 @@ echo 'Thanks, Key Installer'
 #禁止密码登录
 sed -i "s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
 service sshd restart
+
+#安装Docker
+curl -fsSL https://get.docker.com | sh
+#安装Docker-compose
+sudo curl -L "https://get.daocloud.io/docker/compose/releases/download/2.11.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
