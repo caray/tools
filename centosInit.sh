@@ -93,7 +93,9 @@ service sshd restart
 
 #安装Docker
 curl -fsSL https://get.docker.com | sh
+systemctl enable docker
+systemctl start docker
 #安装Docker-compose
-sudo curl -L "https://get.daocloud.io/docker/compose/releases/download/2.11.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/v2.11.2/docker-compose-$(uname -s| tr '[:upper:]' '[:lower:]')-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 docker-compose --version
