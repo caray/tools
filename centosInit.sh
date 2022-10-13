@@ -26,7 +26,6 @@ github="raw.githubusercontent.com/caray/tools/master"
 if [ -s /etc/selinux/config ]; then
 	sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 fi
-echo "Port 22222" >> /etc/ssh/sshd_config
 
 
 #安装基础
