@@ -100,5 +100,27 @@ curl -L "https://github.com/docker/compose/releases/download/v2.11.2/docker-comp
 chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
+#docker使用firewalld
+
+firewall-cmd --add-masquerade --permanent 
+# Removing DOCKER-USER CHAIN (it won't exist at first)
+firewall-cmd --permanent --direct --remove-chain ipv4 filter DOCKER-USER
+
+# Flush rules from DOCKER-USER chain (again, these won't exist at first; firewalld seems to remember these even if the chain is gone)
+firewall-cmd --permanent --direct --remove-rules ipv4 filter DOCKER-USER
+
+# Add the DOCKER-USER chain to firewalld
+firewall-cmd --permanent --direct --add-chain ipv4 filter DOCKER-USER
+
+firewall-cmd --permanent --direct --add-rule ipv4 filter DOCKER-USER 0 -i docker0 -j ACCEPT -m comment --comment "allows incoming from docker"
+firewall-cmd --permanent --direct --add-rule ipv4 filter DOCKER-USER 0 -i docker0 -o eth0 -j ACCEPT -m comment --comment "allows docker to eth0"
+firewall-cmd --permanent --direct --add-rule ipv4 filter DOCKER-USER 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment "allows docker containers to connect to the outside world"
+firewall-cmd --permanent --direct --add-rule ipv4 filter DOCKER-USER 0 -j RETURN -s 172.17.0.0/16 -m comment --comment "allow internal docker communication"
+
+## 你可以直接允許來自特定 IP 的所有流量
+firewall-cmd --permanent --direct --add-rule ipv4 filter DOCKER-USER 0 -s 10.10.10.0/24 -j ACCEPT 
+firewall-cmd --permanent --direct --add-rule ipv4 filter DOCKER-USER 0 -j REJECT --reject-with icmp-host-unreachable -m comment --comment "reject all other traffic"
+firewall-cmd --reload
+
 #bbr加速
 wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
